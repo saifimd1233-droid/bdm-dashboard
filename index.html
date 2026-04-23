@@ -5,45 +5,125 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BDM Login</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-body{margin:0;font-family:Arial,sans-serif;background:#eef2ff;display:flex;align-items:center;justify-content:center;min-height:100vh}
-.card{background:#fff;width:380px;padding:28px;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
-h1{margin:0 0 8px;color:#1e3a8a}.muted{color:#666;margin-bottom:14px}
-input{width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:10px;box-sizing:border-box}
-button{width:100%;padding:12px;margin-top:10px;border:none;border-radius:10px;color:#fff;background:#2563eb;cursor:pointer}
-.secondary{background:#111827}.msg{margin-top:12px;font-size:14px}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#eef2ff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh
+}
+.card{
+  background:#fff;
+  width:380px;
+  padding:28px;
+  border-radius:18px;
+  box-shadow:0 10px 30px rgba(0,0,0,.08)
+}
+h1{margin:0 0 8px;color:#1e3a8a}
+.muted{color:#666;margin-bottom:14px}
+input{
+  width:100%;
+  padding:12px;
+  margin:8px 0;
+  border:1px solid #ddd;
+  border-radius:10px;
+  box-sizing:border-box
+}
+button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  border-radius:10px;
+  color:#fff;
+  background:#2563eb;
+  cursor:pointer;
+  font-size:15px
+}
+.secondary{background:#111827}
+.msg{margin-top:12px;font-size:14px;font-weight:bold}
 </style>
 </head>
+
 <body>
 <div class="card">
-<h1>BDM Login</h1>
-<div class="muted">Login with email/password</div>
-<input id="email" type="email" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
-<button onclick="signIn()">Login</button>
-<button class="secondary" onclick="signUp()">Sign Up</button>
-<div class="muted" style="text-align:center;margin-top:12px">Use approved email IDs only</div>
-<div id="msg" class="msg"></div>
+  <h1>BDM Login</h1>
+  <div class="muted">Login with email/password</div>
+
+  <input id="email" type="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+
+  <button onclick="signIn()">Login</button>
+  <button class="secondary" onclick="signUp()">Sign Up</button>
+
+  <div class="muted" style="text-align:center;margin-top:12px">
+    Use approved email IDs only
+  </div>
+
+  <div id="msg" class="msg"></div>
 </div>
+
 <script>
-const SUPABASE_URL='https://tistikdpbligsvxbgngf.supabase.co';
-const SUPABASE_KEY='sb_publishable_D4JSH1Xe_wf_iwaqpVObeA_gLcr5kWH';
-const client=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-function show(t,c='green'){const m=document.getElementById('msg');m.innerText=t;m.style.color=c;}
+const SUPABASE_URL = 'https://tistikdpbligsvxbgngf.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_D4JSH1Xe_wf_iwaqpVObeA_gLcr5kWH';
+
+const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+function show(text,color='green'){
+  const m=document.getElementById('msg');
+  m.innerText=text;
+  m.style.color=color;
+}
+
 async function signUp(){
- const email=document.getElementById('email').value.trim();
- const password=document.getElementById('password').value.trim();
- const {error}=await client.auth.signUp({email,password});
- if(error) return show(error.message,'red');
- show('Signup success! Check email if confirmation required.');
+  const email=document.getElementById('email').value.trim();
+  const password=document.getElementById('password').value.trim();
+
+  if(!email || !password){
+    return show('Please enter email and password','red');
+  }
+
+  const {error} = await client.auth.signUp({
+    email,
+    password,
+    options:{
+      emailRedirectTo:'https://saifimd1233-droid.github.io/bdm-dashboard/'
+    }
+  });
+
+  if(error) return show(error.message,'red');
+
+  show('Signup successful! Check your email to confirm account.');
 }
+
 async function signIn(){
- const email=document.getElementById('email').value.trim();
- const password=document.getElementById('password').value.trim();
- const {error}=await client.auth.signInWithPassword({email,password});
- if(error) return show(error.message,'red');
- show('Login successful!');
+  const email=document.getElementById('email').value.trim();
+  const password=document.getElementById('password').value.trim();
+
+  if(!email || !password){
+    return show('Please enter email and password','red');
+  }
+
+  const {error} = await client.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if(error) return show(error.message,'red');
+
+  show('Login successful!');
 }
+
+window.onload = async () => {
+  const { data } = await client.auth.getSession();
+  if(data.session){
+    show('Already logged in!');
+  }
+};
 </script>
 </body>
 </html>

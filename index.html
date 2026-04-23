@@ -18,7 +18,7 @@ body{
 }
 .card{
   width:380px;
-  background:#ffffff;
+  background:#fff;
   padding:28px;
   border-radius:18px;
   box-shadow:0 10px 30px rgba(0,0,0,.08);
@@ -35,7 +35,7 @@ input{
   width:100%;
   padding:12px;
   margin:8px 0;
-  border:1px solid #dcdcdc;
+  border:1px solid #ddd;
   border-radius:10px;
   box-sizing:border-box;
   font-size:15px;
@@ -46,10 +46,10 @@ button{
   margin-top:10px;
   border:none;
   border-radius:10px;
-  font-size:15px;
-  cursor:pointer;
   color:#fff;
   background:#2563eb;
+  cursor:pointer;
+  font-size:15px;
 }
 button:hover{
   opacity:.95;
@@ -97,8 +97,7 @@ async function signUp(){
   const password = document.getElementById("password").value.trim();
 
   if(email === "" || password === ""){
-    show("Please enter email and password","red");
-    return;
+    return show("Please enter email and password","red");
   }
 
   const { error } = await client.auth.signUp({
@@ -107,8 +106,7 @@ async function signUp(){
   });
 
   if(error){
-    show(error.message,"red");
-    return;
+    return show(error.message,"red");
   }
 
   show("Signup successful! Now login.");
@@ -119,30 +117,27 @@ async function signIn(){
   const password = document.getElementById("password").value.trim();
 
   if(email === "" || password === ""){
-    show("Please enter email and password","red");
-    return;
+    return show("Please enter email and password","red");
   }
 
-  const { data, error } = await client.auth.signInWithPassword({
+  const { error } = await client.auth.signInWithPassword({
     email: email,
     password: password
   });
 
   if(error){
-    show(error.message,"red");
-    return;
+    return show(error.message,"red");
   }
 
-  show("Login successful!");
+  show("Login successful! Opening dashboard...");
 
   setTimeout(function(){
-    window.location.reload();
+    window.location.href="https://script.google.com/macros/s/AKfycbwFSgYvLv8GHhXsOgG-jgHPwZ4Kec4l9zW1_sXECHKfXYEWsh4dYCetl8r5WgSmNLXLXA/exec";
   },1000);
 }
 
 window.onload = async function(){
   const { data } = await client.auth.getSession();
-
   if(data.session){
     show("Already logged in");
   }

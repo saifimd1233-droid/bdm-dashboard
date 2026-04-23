@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BDM Dashboard Login</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#eef2ff}
+.wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.card{background:#fff;width:100%;max-width:430px;padding:28px;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+h1{margin:0 0 8px;color:#1e3a8a}.muted{color:#666;font-size:14px;margin-bottom:18px}
+input{width:100%;padding:12px;border:1px solid #d1d5db;border-radius:10px;margin:8px 0;box-sizing:border-box}
+button{width:100%;padding:12px;border:0;border-radius:10px;background:#2563eb;color:#fff;margin-top:10px;cursor:pointer}
+button.secondary{background:#111827}.small{font-size:13px;color:#666;margin-top:14px;text-align:center}
+#dash{display:none}.top{display:flex;justify-content:space-between;align-items:center}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.box{background:#f8fafc;padding:16px;border-radius:14px}
+</style>
+</head>
+<body>
+<div class='wrap'>
+<div class='card' id='auth'>
+<h1>BDM Login</h1>
+<div class='muted'>Login with email/password</div>
+<input id='email' placeholder='Email'>
+<input id='pass' type='password' placeholder='Password'>
+<button onclick='login()'>Login</button>
+<button class='secondary' onclick='signup()'>Sign Up</button>
+<div class='small'>Use approved email IDs only</div>
+</div>
+
+<div class='card' id='dash'>
+<div class='top'><h1>Dashboard</h1><button style='width:auto;padding:10px 14px' onclick='logout()'>Logout</button></div>
+<div class='muted' id='who'></div>
+<div class='grid'>
+<div class='box'><b>Revenue</b><div>₹ Add from sheet</div></div>
+<div class='box'><b>ARPU</b><div>Add from sheet</div></div>
+<div class='box'><b>Target</b><div>Add from sheet</div></div>
+<div class='box'><b>BDMs</b><div>5</div></div>
+</div>
+<p class='small'>Created by Sohrab Alam</p>
+</div>
+</div>
+<script>
+const SUPABASE_URL='PASTE_SUPABASE_URL';
+const SUPABASE_KEY='PASTE_SUPABASE_ANON_KEY';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+async function signup(){const {error}=await sb.auth.signUp({email:email.value,password:pass.value});alert(error?error.message:'Signup success. Check email.');}
+async function login(){const {error}=await sb.auth.signInWithPassword({email:email.value,password:pass.value});if(error) alert(error.message);}
+async function logout(){await sb.auth.signOut();location.reload();}
+sb.auth.onAuthStateChange((_e,s)=>{if(s?.user){auth.style.display='none';dash.style.display='block';who.innerText=s.user.email;}});
+</script>
+</body>
+</html>

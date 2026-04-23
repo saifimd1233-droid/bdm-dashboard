@@ -17,8 +17,8 @@ body{
   min-height:100vh;
 }
 .card{
-  width:380px;
   background:#fff;
+  width:380px;
   padding:28px;
   border-radius:18px;
   box-shadow:0 10px 30px rgba(0,0,0,.08);
@@ -38,7 +38,6 @@ input{
   border:1px solid #ddd;
   border-radius:10px;
   box-sizing:border-box;
-  font-size:15px;
 }
 button{
   width:100%;
@@ -46,18 +45,15 @@ button{
   margin-top:10px;
   border:none;
   border-radius:10px;
+  font-size:15px;
+  cursor:pointer;
   color:#fff;
   background:#2563eb;
-  cursor:pointer;
-  font-size:15px;
 }
-button:hover{
-  opacity:.95;
-}
-.secondary{
+.signup{
   background:#111827;
 }
-#msg{
+.msg{
   margin-top:14px;
   font-size:14px;
   font-weight:bold;
@@ -69,15 +65,15 @@ button:hover{
 
 <div class="card">
   <h1>BDM Login</h1>
-  <div class="sub">Login / Signup with any email</div>
+  <div class="sub">Login with email/password</div>
 
   <input id="email" type="email" placeholder="Enter Email">
   <input id="password" type="password" placeholder="Enter Password">
 
-  <button onclick="signIn()">Login</button>
-  <button class="secondary" onclick="signUp()">Sign Up</button>
+  <button onclick="login()">Login</button>
+  <button class="signup" onclick="signup()">Sign Up</button>
 
-  <div id="msg"></div>
+  <div id="msg" class="msg"></div>
 </div>
 
 <script>
@@ -86,38 +82,41 @@ const SUPABASE_KEY = "sb_publishable_D4JSH1Xe_wf_iwaqpVObeA_gLcr5kWH";
 
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-function show(message,color="green"){
-  const box = document.getElementById("msg");
-  box.innerText = message;
-  box.style.color = color;
+function show(text,color="green"){
+  const msg = document.getElementById("msg");
+  msg.innerText = text;
+  msg.style.color = color;
 }
 
-async function signUp(){
+async function signup(){
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
 
-  if(email === "" || password === ""){
-    return show("Please enter email and password","red");
+  if(!email || !password){
+    return show("Enter email and password","red");
   }
 
   const { error } = await client.auth.signUp({
     email: email,
-    password: password
+    password: password,
+    options:{
+      emailRedirectTo:"https://saifimd1233-droid.github.io/bdm-dashboard/"
+    }
   });
 
   if(error){
     return show(error.message,"red");
   }
 
-  show("Signup successful! Now login.");
+  show("Signup successful! Check email.");
 }
 
-async function signIn(){
+async function login(){
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
 
-  if(email === "" || password === ""){
-    return show("Please enter email and password","red");
+  if(!email || !password){
+    return show("Enter email and password","red");
   }
 
   const { error } = await client.auth.signInWithPassword({
@@ -129,17 +128,19 @@ async function signIn(){
     return show(error.message,"red");
   }
 
-  show("Login successful! Opening dashboard...");
+  show("Login successful! Redirecting...");
 
-  setTimeout(function(){
-    window.location.href="https://script.google.com/macros/s/AKfycbwFSgYvLv8GHhXsOgG-jgHPwZ4Kec4l9zW1_sXECHKfXYEWsh4dYCetl8r5WgSmNLXLXA/exec";
-  },1000);
+  setTimeout(() => {
+    window.location.href =
+    "https://script.google.com/macros/s/AKfycbwFSgYvLv8GHhXsOgG-jgHPwZ4Kec4I9zW1_sXECHKfXYEWsh4dYCetl8r5WgSmNLXLXA/exec";
+  }, 1000);
 }
 
-window.onload = async function(){
+window.onload = async () => {
   const { data } = await client.auth.getSession();
   if(data.session){
-    show("Already logged in");
+    window.location.href =
+    "https://script.google.com/macros/s/AKfycbwFSgYvLv8GHhXsOgG-jgHPwZ4Kec4I9zW1_sXECHKfXYEWsh4dYCetl8r5WgSmNLXLXA/exec";
   }
 };
 </script>

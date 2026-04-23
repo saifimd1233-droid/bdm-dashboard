@@ -2,142 +2,47 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BDM Login</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#eef2ff;
-}
-.wrap{
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-}
-.card{
-  background:#fff;
-  width:100%;
-  max-width:430px;
-  padding:28px;
-  border-radius:18px;
-  box-shadow:0 10px 30px rgba(0,0,0,.08);
-}
-h1{
-  margin:0 0 8px;
-  color:#1e3a8a;
-}
-p{
-  color:#666;
-  margin:0 0 18px;
-}
-input{
-  width:100%;
-  padding:14px;
-  margin:8px 0;
-  border:1px solid #d1d5db;
-  border-radius:10px;
-  box-sizing:border-box;
-}
-button{
-  width:100%;
-  padding:14px;
-  margin-top:10px;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
-  font-size:15px;
-}
-.primary{
-  background:#2563eb;
-  color:#fff;
-}
-.dark{
-  background:#111827;
-  color:#fff;
-}
-.msg{
-  margin-top:12px;
-  text-align:center;
-  font-size:14px;
-  color:green;
-}
-.err{
-  color:red;
-}
+body{margin:0;font-family:Arial,sans-serif;background:#eef2ff;display:flex;align-items:center;justify-content:center;min-height:100vh}
+.card{background:#fff;width:380px;padding:28px;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+h1{margin:0 0 8px;color:#1e3a8a}.muted{color:#666;margin-bottom:14px}
+input{width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:10px;box-sizing:border-box}
+button{width:100%;padding:12px;margin-top:10px;border:none;border-radius:10px;color:#fff;background:#2563eb;cursor:pointer}
+.secondary{background:#111827}.msg{margin-top:12px;font-size:14px}
 </style>
 </head>
-
 <body>
-<div class="wrap">
-  <div class="card">
-    <h1>BDM Login</h1>
-    <p>Login / Sign Up with Gmail</p>
-
-    <input type="email" id="email" placeholder="Enter Gmail">
-    <input type="password" id="password" placeholder="Enter Password">
-
-    <button class="primary" onclick="loginUser()">Login</button>
-    <button class="dark" onclick="signupUser()">Sign Up</button>
-
-    <div id="msg" class="msg"></div>
-  </div>
+<div class="card">
+<h1>BDM Login</h1>
+<div class="muted">Login with email/password</div>
+<input id="email" type="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+<button onclick="signIn()">Login</button>
+<button class="secondary" onclick="signUp()">Sign Up</button>
+<div class="muted" style="text-align:center;margin-top:12px">Use approved email IDs only</div>
+<div id="msg" class="msg"></div>
 </div>
-
 <script>
-const supabaseUrl = "PASTE_YOUR_SUPABASE_URL_HERE";
-const supabaseKey = "PASTE_YOUR_ANON_KEY_HERE";
-
-const client = supabase.createClient(supabaseUrl, supabaseKey);
-
-function showMsg(text, error=false){
-  const box = document.getElementById("msg");
-  box.innerText = text;
-  box.className = error ? "msg err" : "msg";
+const SUPABASE_URL='https://tistikdpbligsvxbgngf.supabase.co';
+const SUPABASE_KEY='sb_publishable_D4JSH1Xe_wf_iwaqpVObeA_gLcr5kWH';
+const client=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+function show(t,c='green'){const m=document.getElementById('msg');m.innerText=t;m.style.color=c;}
+async function signUp(){
+ const email=document.getElementById('email').value.trim();
+ const password=document.getElementById('password').value.trim();
+ const {error}=await client.auth.signUp({email,password});
+ if(error) return show(error.message,'red');
+ show('Signup success! Check email if confirmation required.');
 }
-
-async function signupUser(){
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-
-  if(!email || !password){
-    showMsg("Enter email and password", true);
-    return;
-  }
-
-  const { error } = await client.auth.signUp({
-    email: email,
-    password: password
-  });
-
-  if(error){
-    showMsg(error.message, true);
-  }else{
-    showMsg("Signup success! Check Gmail to verify.");
-  }
-}
-
-async function loginUser(){
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-
-  const { data, error } = await client.auth.signInWithPassword({
-    email: email,
-    password: password
-  });
-
-  if(error){
-    showMsg(error.message, true);
-  }else{
-    showMsg("Login successful!");
-    setTimeout(()=>{
-      window.location.href="https://google.com";
-    },1000);
-  }
+async function signIn(){
+ const email=document.getElementById('email').value.trim();
+ const password=document.getElementById('password').value.trim();
+ const {error}=await client.auth.signInWithPassword({email,password});
+ if(error) return show(error.message,'red');
+ show('Login successful!');
 }
 </script>
 </body>

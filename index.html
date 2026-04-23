@@ -2,50 +2,54 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BDM Login</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>BDM Secure Login</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
+*{margin:0;padding:0;box-sizing:border-box}
 body{
-  margin:0;
   font-family:Arial,sans-serif;
   background:#eef2ff;
+  min-height:100vh;
   display:flex;
   justify-content:center;
   align-items:center;
-  min-height:100vh;
+  padding:20px;
 }
 .card{
   background:#fff;
-  width:380px;
+  width:390px;
+  max-width:100%;
   padding:28px;
   border-radius:18px;
   box-shadow:0 10px 30px rgba(0,0,0,.08);
 }
 h1{
-  margin:0 0 8px;
   color:#1e3a8a;
+  margin-bottom:8px;
+  font-size:38px;
 }
 .sub{
   color:#666;
-  margin-bottom:14px;
+  margin-bottom:16px;
 }
 input{
   width:100%;
-  padding:12px;
+  padding:13px;
   margin:8px 0;
   border:1px solid #ddd;
   border-radius:10px;
-  box-sizing:border-box;
+  font-size:15px;
 }
 button{
   width:100%;
-  padding:12px;
+  padding:13px;
   margin-top:10px;
   border:none;
   border-radius:10px;
   font-size:15px;
+  font-weight:bold;
   cursor:pointer;
   color:#fff;
   background:#2563eb;
@@ -58,6 +62,12 @@ button{
   font-size:14px;
   font-weight:bold;
 }
+.footer{
+  margin-top:18px;
+  text-align:center;
+  color:#777;
+  font-size:13px;
+}
 </style>
 </head>
 
@@ -65,7 +75,7 @@ button{
 
 <div class="card">
   <h1>BDM Login</h1>
-  <div class="sub">Login with email/password</div>
+  <div class="sub">Login or create account</div>
 
   <input id="email" type="email" placeholder="Enter Email">
   <input id="password" type="password" placeholder="Enter Password">
@@ -74,11 +84,17 @@ button{
   <button class="signup" onclick="signup()">Sign Up</button>
 
   <div id="msg" class="msg"></div>
+
+  <div class="footer">Designed by Sohrab Alam</div>
 </div>
 
 <script>
 const SUPABASE_URL = "https://tistikdpbligsvxbgngf.supabase.co";
 const SUPABASE_KEY = "sb_publishable_D4JSH1Xe_wf_iwaqpVObeA_gLcr5kWH";
+
+const DASHBOARD_URL = "https://script.google.com/macros/s/AKfycbwFSgYvLv8GHhXsOgG-jgHPwZ4Kec4I9zW1_sXECHKfXYEWsh4dYCetl8r5WgSmNLXLXA/exec";
+
+const OWNER_EMAIL = "sohrab.alam@houseofedtech.in";
 
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -97,18 +113,15 @@ async function signup(){
   }
 
   const { error } = await client.auth.signUp({
-    email: email,
-    password: password,
-    options:{
-      emailRedirectTo:"https://saifimd1233-droid.github.io/bdm-dashboard/"
-    }
+    email,
+    password
   });
 
   if(error){
     return show(error.message,"red");
   }
 
-  show("Signup successful! Check email.");
+  show("Signup successful! Now login.");
 }
 
 async function login(){
@@ -120,8 +133,8 @@ async function login(){
   }
 
   const { error } = await client.auth.signInWithPassword({
-    email: email,
-    password: password
+    email,
+    password
   });
 
   if(error){
@@ -130,19 +143,24 @@ async function login(){
 
   show("Login successful! Redirecting...");
 
-  setTimeout(() => {
-    window.location.href =
-    "https://script.google.com/macros/s/AKfycbwFSgYvLv8GHhXsOgG-jgHPwZ4Kec4I9zW1_sXECHKfXYEWsh4dYCetl8r5WgSmNLXLXA/exec";
-  }, 1000);
+  setTimeout(()=>{
+    window.location.href = DASHBOARD_URL + "?user=" + encodeURIComponent(email);
+  },1000);
 }
 
 window.onload = async () => {
   const { data } = await client.auth.getSession();
+
   if(data.session){
-    window.location.href =
-    "https://script.google.com/macros/s/AKfycbwFSgYvLv8GHhXsOgG-jgHPwZ4Kec4I9zW1_sXECHKfXYEWsh4dYCetl8r5WgSmNLXLXA/exec";
+    const userEmail = data.session.user.email;
+
+    if(userEmail === OWNER_EMAIL){
+      window.location.href = DASHBOARD_URL;
+    }else{
+      window.location.href = DASHBOARD_URL + "?user=" + encodeURIComponent(userEmail);
+    }
   }
-};
+}
 </script>
 
 </body>

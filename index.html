@@ -124,8 +124,7 @@ async function login(){
 
   show("Login successful! Redirecting...");
   setTimeout(() => {
-    window.location.href = DASHBOARD_URL;
-  }, 1000);
+window.open(DASHBOARD_URL, "_blank");  }, 1000);
 }
 
 window.onload = async () => {

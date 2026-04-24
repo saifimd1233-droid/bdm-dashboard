@@ -45,7 +45,10 @@ button{
   font-size:15px;
 }
 .signup{background:#111827;}
-.msg{margin-top:12px;font-weight:bold;}
+.msg{
+  margin-top:12px;
+  font-weight:bold;
+}
 </style>
 </head>
 
@@ -85,11 +88,13 @@ async function signup(){
   }
 
   const {error}=await client.auth.signUp({
-    email,
-    password
+    email:email,
+    password:password
   });
 
-  if(error) return showMsg(error.message,"red");
+  if(error){
+    return showMsg(error.message,"red");
+  }
 
   showMsg("Signup successful! Now login.");
 }
@@ -103,24 +108,19 @@ async function login(){
   }
 
   const {error}=await client.auth.signInWithPassword({
-    email,
-    password
+    email:email,
+    password:password
   });
 
-  if(error) return showMsg(error.message,"red");
+  if(error){
+    return showMsg(error.message,"red");
+  }
 
-  showMsg("Login successful!");
+  showMsg("Login successful! Opening dashboard...");
 
   setTimeout(()=>{
-    window.open(DASHBOARD_URL,"_blank");
-  },500);
-}
-
-window.onload = async ()=>{
-  const {data}=await client.auth.getSession();
-  if(data.session){
-    showMsg("Already logged in!");
-  }
+    window.location.href = DASHBOARD_URL;
+  },700);
 }
 </script>
 </body>
